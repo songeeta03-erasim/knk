@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SimEra IPTV Player</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+
+<div class="app">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="logo">INTERNET TV developed by Kamol</div>
+    </div>
+
+    <!-- MAIN AREA -->
+    <div class="main">
+
+        <!-- VIDEO PLAYER -->
+<div class="player-frame">
+    <video id="videoPlayer" controls autoplay></video>
+</div>
+
+
+        <!-- SEARCH BOX -->
+        <div class="search-box">
+            <input id="searchInput" placeholder="Search channels...">
+        </div>
+  
+        <!-- CATEGORY BAR -->
+        <div id="categoryBar" class="category-bar"></div>
+
+        <!-- CHANNEL GRID -->
+        <div id="channelGrid" class="channel-grid"></div>
+
+    </div>
+</div>
+
+<!-- DRAWER -->
+<div id="drawer" class="drawer">
+    <h2>Playlist Settings</h2>
+
+    <div class="drawer-section">
+        <label>Upload Playlist</label>
+        <input type="file" id="playlistFile" accept=".m3u,.m3u8">
+    </div>
+
+    <div class="drawer-section">
+        <label>Playlist URL</label>
+        <input type="text" id="playlistUrl" placeholder="https://example.com/list">
+        <button id="loadUrlBtn">Load URL</button>
+    </div>
+
+    <div class="drawer-section">
+        <button id="resetBtn">Reset Playlist</button>
+    </div>
+</div>
+
+<div id="overlay" class="overlay"></div>
+
+<button id="menuBtn" class="menu-btn">☰</button>
+
+<div id="loader" class="loader">Loading...</div>
+
+<script src="js/parser.js"></script>
+<script src="js/player.js"></script>
+<script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</body>
+</html>
