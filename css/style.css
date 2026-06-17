@@ -15,17 +15,28 @@ body {
 
 /* TOP BAR */
 .topbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: #111827;
+  color: #fff;
+  padding: 10px;
+  overflow: hidden; /* ensures text doesn’t overflow */
+  position: relative;
 }
+
 .logo {
-    font-weight: bold;
-    color: #ff004c;
-    margin-right: 10px;
+  display: inline-block;
+  white-space: nowrap;
+  position: relative;
+  animation: moveLogo 12s linear infinite;
+  font-weight: bold;
+  color: #ff004c;
 }
+
+@keyframes moveLogo {
+  from { transform: translateX(500%); }
+  to   { transform: translateX(120%); }
+}
+
+    
+
 button {
     cursor: pointer;
 }
@@ -227,28 +238,36 @@ button {
 
 /* LOADER */
 .loader {
-    position: absolute;
-    top: 50%;
-    left: 60%;
-    transform: translate(-50%,-50%);
-    color: white;
-    background: rgba(0,0,0,0.6);
-    padding: 10px 20px;
-    border-radius: 8px;
-    display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border: 6px solid rgba(255, 255, 255, 0.3); /* light ring */
+  border-top: 6px solid #ffcc00;              /* accent color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: none;
+  z-index: 1001;
 }
 
-/* RESPONSIVE GRID */
-@media (max-width: 1200px) {
-    .channel-grid {
-        grid-template-columns: repeat(5, 1fr);
-    }
+@keyframes spin {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
-@media (max-width: 900px) {
-    .channel-grid {
-        grid-template-columns
 
-}}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  z-index: 1000;
+}
+
 
 
 /* CHANNEL GRID */
@@ -462,4 +481,45 @@ button {
     object-fit: contain;    /* keeps aspect ratio */
     display: block;         /* ensures it’s treated as a block */
     margin: 0 auto 10px;    /* centers horizontally + spacing below */
+}
+
+.playlist-container {
+  display: flex;
+  justify-content: center;   /* center horizontally */
+  align-items: center;       /* center vertically if container has height */
+  gap: 10px;                 /* spacing between buttons */
+  margin-top: 20px;
+}
+
+.playlist-btn {
+  background: #1f2937;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  font-size: 14px;
+}
+
+.playlist-btn:hover {
+  background: #374151;
+}
+
+.playlist-btn.active {
+  background: #ff0033;   /* highlight active playlist */
+  color: #fff;
+}
+
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0078d7;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.btn:hover {
+  background-color: #005a9e;
 }
