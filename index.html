@@ -4,7 +4,7 @@
     <title>SimEra IPTV Player</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+     <meta charset="UTF-8">
 </head>
 <body>
 
@@ -12,23 +12,36 @@
 
     <!-- TOP BAR -->
     <div class="topbar">
-        <div class="logo">INTERNET TV developed by Kamol</div>
+        <div class="logo">INTERNET TV DEVELOPED by KAMOL</div>
     </div>
+     <!-- SEARCH BOX  <iframe src="http://172.16.13.2/" width="800" height="600"></iframe> -->
+
+
 
     <!-- MAIN AREA -->
     <div class="main">
 
         <!-- VIDEO PLAYER -->
 <div class="player-frame">
+    <div class="player" style="position:relative;">
     <video id="videoPlayer" controls autoplay></video>
+    <div id="loader" class="loader"></div>
+    <div id="overlay" class="overlay"></div>
 </div>
-
-
+<!-- Buttons -->
+<div class="playlist-container">
+  <button class="playlist-btn" onclick="setActivePlaylist(this,'Bangla')">Channel List 1</button>
+  <button class="playlist-btn" onclick="setActivePlaylist(this,'Hindi')">Channel List 2</button>
+  <button class="playlist-btn" onclick="setActivePlaylist(this,'Sports')">Channel List 3</button>
+  <a href="http://172.16.13.2/" class="btn">MORE</a>
+  <a href="http://moviemazic.xyz/live-tv.html" class="btn">MORE</a>
+</div>
         <!-- SEARCH BOX -->
         <div class="search-box">
             <input id="searchInput" placeholder="Search channels...">
         </div>
-  
+    <div id="defaultPlaylists">
+
         <!-- CATEGORY BAR -->
         <div id="categoryBar" class="category-bar"></div>
 
@@ -58,11 +71,32 @@
     </div>
 </div>
 
-<div id="overlay" class="overlay"></div>
+
 
 <button id="menuBtn" class="menu-btn">☰</button>
 
-<div id="loader" class="loader">Loading...</div>
+
+
+<script>
+  const video = document.getElementById("videoPlayer");
+  const loader = document.getElementById("loader");
+  const overlay = document.getElementById("overlay");
+
+  video.addEventListener("waiting", () => {
+    loader.style.display = "block";
+    overlay.style.display = "block";
+  });
+
+  video.addEventListener("playing", () => {
+    loader.style.display = "none";
+    overlay.style.display = "none";
+  });
+
+  video.addEventListener("ended", () => {
+    loader.style.display = "none";
+    overlay.style.display = "none";
+  });
+</script>
 
 <script src="js/parser.js"></script>
 <script src="js/player.js"></script>
