@@ -213,6 +213,59 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 });
 
+const defaultPlaylists = {
+    "Bangla": "playlists/List1.m3u",
+    "Hindi": "playlists/List2.m3u",
+    "Sports": "playlists/List3.m3u",
+};
+function loadDefaultPlaylist(name) {
+    const url = defaultPlaylists[name];
+    if (!url) return;
+
+    fetch(url)
+        .then(res => res.text())
+        .then(text => {
+            allChannels = parseM3U(text);
+            filteredChannels = allChannels;
+            buildCategories();
+            applyFilters();
+            if (allChannels.length > 0) {
+                playChannel(allChannels[0].url);
+            }
+            localStorage.setItem("playlistUrl", url);
+        })
+        .catch(err => console.error("Failed to load default playlist:", err));
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+
+    try {
+
+        const response =
+            await fetch("playlists/channels.m3u");
+
+        const text =
+            await response.text();
+
+        allChannels = parseM3U(text);
+
+        filteredChannels = allChannels;
+
+        buildCategories();
+        applyFilters();
+        if (allChannels.length > 0) {
+    playChannel(allChannels[0].url);
+}
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+
+});
+
+
 
 function buildCategories() {
     const bar = document.getElementById("categoryBar");
@@ -299,4 +352,16 @@ function showFavorites(){
     showOnlyFavorites = !showOnlyFavorites;
 
     applyFilters();
+}
+
+
+function setActivePlaylist(button, name) {
+  // remove active class from all buttons
+  document.querySelectorAll('.playlist-btn').forEach(btn => btn.classList.remove('active'));
+
+  // add active class to the clicked one
+  button.classList.add('active');
+
+  // load the playlist
+  loadDefaultPlaylist(name);
 }
