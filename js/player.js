@@ -35,25 +35,25 @@ video.onplaying = () => {
     document.getElementById("loader").style.display = "none";
 
     // ✅ Fullscreen
-    if (video.requestFullscreen) {
-        video.requestFullscreen().catch(err => {
-            console.log("Fullscreen failed:", err);
-        });
-    } else if (video.webkitEnterFullscreen) {
+   // if (video.requestFullscreen) {
+     //   video.requestFullscreen().catch(err => {
+       //     console.log("Fullscreen failed:", err);
+       // });
+    //} else if (video.webkitEnterFullscreen) {
         // iOS Safari/Chrome fallback
-        video.webkitEnterFullscreen();
-    }
+      //  video.webkitEnterFullscreen();
+   // }
 
     // ✅ Orientation lock (only works on Android Chrome/Firefox)
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(err => {
-            console.log("Orientation lock failed:", err);
-        });
-    } else {
+    //if (screen.orientation && screen.orientation.lock) {
+     //   screen.orientation.lock("landscape").catch(err => {
+      //      console.log("Orientation lock failed:", err);
+     //   });
+   // } else {
         // iOS fallback: show a hint
-        console.log("Orientation lock not supported on iOS.");
+     //   console.log("Orientation lock not supported on iOS.");
         // Optional: alert("Please rotate your device for fullscreen landscape view.");
-    }
+    //}
 };
 
 }
