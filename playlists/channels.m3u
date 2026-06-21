@@ -365,3 +365,11 @@ https://app.ncare.live/live-orgin/timetvusa.stream/playlist.m3u8
 https://app.ncare.live/live-orgin/tvoneuksni.stream/playlist.m3u8
 #EXTINF:-1 group-title="News",NRB TV
 https://app.ncare.live/live-orgin/nrb-eu.stream/playlist.m3u8
+#EXTINF:-1 tvg-name="Bain" group-title="FIFA World Cup 2026",Bein Sports Direct
+http://172.16.11.2:4562/CH-75/index.m3u8
+#EXTINF:-1 tvg-name="PTV" group-title="FIFA World Cup 2026",PTV
+http://172.16.11.2:4562/CH-11/index.m3u8
+#EXTINF:-1 tvg-name="EURO" group-title="FIFA World Cup 2026",EURO
+http://172.16.11.2:4562/CH-79/index.m3u8
+#EXTINF:-1 tvg-name="SONY" group-title="FIFA World Cup 2026",SONY MAX
+http://172.16.11.2:4562/CH-38/index.m3u8
