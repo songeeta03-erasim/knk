@@ -1,59 +1,113 @@
+let currentHls = null;
+let streamTimeout = null;
+let failedChannels = new Set();
+let currentUrl = null;
+
 function playChannel(url) {
     const video = document.getElementById("videoPlayer");
+    const loader = document.getElementById("loader");
+
+    currentUrl = url;
 
     activeChannelUrl = url;
     localStorage.setItem("lastChannel", url);
-    document.getElementById("loader").style.display = "block";
+
+    loader.style.display = "block";
     renderChannels();
 
-    // Reset previous stream
     video.pause();
     video.removeAttribute("src");
     video.load();
 
+    clearTimeout(streamTimeout);
+
+    if (currentHls) {
+        currentHls.destroy();
+        currentHls = null;
+    }
+
+    // ⏱ dead stream detection
+    streamTimeout = setTimeout(() => {
+        console.log("Timeout → next channel");
+        playNextChannel();
+    }, 8000);
+
     if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            video.play();
+        currentHls = new Hls({
+            enableWorker: true,
+            maxBufferLength: 60,
+            maxMaxBufferLength: 120,
+            backBufferLength: 30,
+            lowLatencyMode: false
         });
 
-        hls.on(Hls.Events.ERROR, function () {
-            document.getElementById("loader").style.display = "none";
+        currentHls.loadSource(url);
+        currentHls.attachMedia(video);
+
+        currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+            clearTimeout(streamTimeout);
+            video.play().catch(() => {});
         });
+
+        currentHls.on(Hls.Events.ERROR, (event, data) => {
+
+            if (!data.fatal) return;
+
+            console.log("Fatal error:", data);
+
+            failedChannels.add(currentUrl);
+
+            currentHls.destroy();
+            currentHls = null;
+
+            playNextChannel();
+        });
+
     } else {
         video.src = url;
-        video.oncanplay = () => {
-            document.getElementById("loader").style.display = "none";
-            video.play();
+
+        video.onloadedmetadata = () => {
+            clearTimeout(streamTimeout);
+            video.play().catch(() => {});
+        };
+
+        video.onerror = () => {
+            failedChannels.add(currentUrl);
+            playNextChannel();
         };
     }
 
-video.onplaying = () => {
-    document.getElementById("loader").style.display = "none";
+    video.onwaiting = () => loader.style.display = "block";
+    video.onplaying = () => loader.style.display = "none";
+}
 
-    // ✅ Fullscreen
-   // if (video.requestFullscreen) {
-     //   video.requestFullscreen().catch(err => {
-       //     console.log("Fullscreen failed:", err);
-       // });
-    //} else if (video.webkitEnterFullscreen) {
-        // iOS Safari/Chrome fallback
-      //  video.webkitEnterFullscreen();
-   // }
+function playNextChannel() {
+    if (!filteredChannels || filteredChannels.length === 0) return;
 
-    // ✅ Orientation lock (only works on Android Chrome/Firefox)
-    //if (screen.orientation && screen.orientation.lock) {
-     //   screen.orientation.lock("landscape").catch(err => {
-      //      console.log("Orientation lock failed:", err);
-     //   });
-   // } else {
-        // iOS fallback: show a hint
-     //   console.log("Orientation lock not supported on iOS.");
-        // Optional: alert("Please rotate your device for fullscreen landscape view.");
-    //}
-};
+    // 🔥 ALWAYS find current index fresh (VERY IMPORTANT FIX)
+    let currentIndex = filteredChannels.findIndex(c => c.url === currentUrl);
 
+    if (currentIndex === -1) currentIndex = 0;
+
+    const total = filteredChannels.length;
+
+    // forward search only
+    for (let i = 1; i <= total; i++) {
+
+        const idx = (currentIndex + i) % total;
+        const channel = filteredChannels[idx];
+
+        if (failedChannels.has(channel.url)) continue;
+
+        console.log("Next working channel:", channel.name);
+
+        playChannel(channel.url);
+        return;
+    }
+
+    console.log("Resetting failed list (all channels failed)");
+
+    failedChannels.clear();
+    playChannel(filteredChannels[0].url);
 }
