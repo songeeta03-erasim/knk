@@ -4,6 +4,8 @@ let currentCategory = "All Channels";
 let activeChannelUrl = null;
 let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 let showOnlyFavorites = false;
+let currentChannelIndex = 0;
+
 
 document
 .getElementById("searchInput")
@@ -39,30 +41,98 @@ document
 });
 
 function renderChannels() {
+//to show channel number 
+    const totalChannels = allChannels.length; // original full list
+const shownChannels = filteredChannels.length;
+
+document.getElementById("channelCount").innerText =
+    `Showing ${shownChannels} of ${totalChannels} channels`;
+    // previous one
     const grid = document.getElementById("channelGrid");
+
+    // 1️⃣ SHOW SHIMMER FIRST
     grid.innerHTML = "";
 
-    filteredChannels.forEach((channel) => {
-        const div = document.createElement("div");
-        div.className = "channel-item" +
-            (activeChannelUrl === channel.url ? " active" : "");
+    for (let i = 0; i < 12; i++) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "channel-item shimmer";
 
-        div.innerHTML = `
-            <img src="${channel.logo || 'assets/default-channel.png'}"
-                 class="channel-logo"
-                 onerror="this.src='assets/default-channel.png'">
-            <div class="channel-name">${channel.name || 'Unknown Channel'}</div>
-            <div class="channel-category">${channel.category || ''}</div>
-            <button class="fav-btn" onclick="toggleFavorite(event,'${channel.name}')">
-                <i class="far fa-heart" style="color:${favorites.includes(channel.name) ? 'red' : '#666'}"></i>
-            </button>
+        placeholder.innerHTML = `
+            <div style="width:80px;height:80px;"></div>
+            <div style="width:60px;height:10px;background:#333;margin-top:10px;border-radius:5px;"></div>
+            <div style="width:40px;height:8px;background:#2a2a2a;margin-top:5px;border-radius:5px;"></div>
         `;
 
-        div.onclick = () => playChannel(channel.url);
-        grid.appendChild(div);
-    });
+        grid.appendChild(placeholder);
+    }
+
+    // 2️⃣ LOAD REAL CHANNELS AFTER SHORT DELAY
+    setTimeout(() => {
+        grid.innerHTML = "";
+
+        filteredChannels.forEach((channel) => {
+            const div = document.createElement("div");
+            div.className = "channel-item" +
+                (activeChannelUrl === channel.url ? " active" : "");
+
+            div.innerHTML = `
+${channel.logo && channel.logo.trim() ? `
+                                        <img 
+                                            src="${channel.logo && channel.logo.trim() 
+                                                ? channel.logo 
+                                                : 'assets/default-channel.avif'}"
+                                            class="channel-logo"
+                                            loading="lazy"
+                                            decoding="async"
+                                            onerror="this.src='assets/default-channel.avif'"
+                                        >
+                                        ` : `
+                                            <div class="channel-logo-fallback">
+                                                ${getInitials(channel.name)}
+                                            </div>
+                                        `}
+
+                            <div class="channel-name">${channel.name || 'Unknown Channel'}</div>
+                            <div class="channel-category">${channel.category || ''}</div>
+
+                            <button class="fav-btn" onclick="toggleFavorite(event, ${JSON.stringify(channel.name)})">
+                                <i class="far fa-heart" style="color:${favorites.includes(channel.name) ? 'red' : '#666'}"></i>
+                            </button>
+                        `;
+
+            div.onclick = () => playChannel(channel.url);
+            grid.appendChild(div);
+        });
+
+    }, 300);
 }
 
+
+function getInitials(name) {
+    if (!name) return "TV";
+
+    return name
+        .split(" ")
+        .map(word => word[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase();
+}
+
+
+document.getElementById("nextChannelBtn").addEventListener("click", () => {
+    let nextIndex = currentChannelIndex + 1;
+    if (nextIndex >= filteredChannels.length) nextIndex = 0; // loop back
+    currentChannelIndex = nextIndex;
+    playChannel(filteredChannels[currentChannelIndex].url);
+});
+
+document.getElementById("prevChannelBtn").addEventListener("click", () => {
+    let prevIndex = currentChannelIndex - 1;
+    if (prevIndex < 0) prevIndex = filteredChannels.length - 1; // loop to last
+    currentChannelIndex = prevIndex;
+    playChannel(filteredChannels[currentChannelIndex].url);
+});
 
 
 
