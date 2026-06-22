@@ -24,18 +24,30 @@
         <!-- VIDEO PLAYER -->
 <div class="player-frame">
     <div class="player" style="position:relative;">
-    <video id="videoPlayer" controls autoplay></video>
+    <video id="videoPlayer"
+       playsinline
+       webkit-playsinline
+       controls
+       poster="assets/default-channel.png">
+
+    </video>
     <div id="loader" class="loader"></div>
     <div id="overlay" class="overlay"></div>
 </div>
 <!-- Buttons -->
 <div class="playlist-container">
+ <button id="prevChannelBtn" class="playlist-btn">⏮ Previous</button>
+
   <button class="playlist-btn" onclick="setActivePlaylist(this,'Bangla')">Channel List 1</button>
   <button class="playlist-btn" onclick="setActivePlaylist(this,'Hindi')">Channel List 2</button>
   <button class="playlist-btn" onclick="setActivePlaylist(this,'Sports')">Channel List 3</button>
   <a href="http://172.16.13.2/" class="btn">MORE</a>
   <a href="http://moviemazic.xyz/live-tv.html" class="btn">MORE</a>
+
+ <button id="nextChannelBtn" class="playlist-btn">⏭ Next</button>
 </div>
+
+
         <!-- SEARCH BOX -->
         <div class="search-box">
             <input id="searchInput" placeholder="Search channels...">
@@ -46,6 +58,7 @@
         <div id="categoryBar" class="category-bar"></div>
 
         <!-- CHANNEL GRID -->
+        <div id="channelCount"></div>
         <div id="channelGrid" class="channel-grid"></div>
 
     </div>
