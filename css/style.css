@@ -145,21 +145,6 @@ button {
     font-weight: bold;
 }
 
-/* FAVORITES BUTTON */
-.fav-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 6px;
-}
-.fav-btn i {
-    transition: color 0.3s;
-}
-.fav-btn:hover i {
-    color: #ff004c;
-}
-
 
 /* MENU & DRAWER */
 .menu-btn {
@@ -275,7 +260,139 @@ button {
     display: grid;
     gap: 12px;
     margin-top: 20px;
-    grid-template-columns: repeat(7, 1fr); /* default large desktop */
+    grid-template-columns: repeat(7, 1fr);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .channel-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1025px) and (max-width: 1280px) {
+    .channel-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1281px) and (max-width: 1440px) {
+    .channel-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (min-width: 1441px) {
+    .channel-grid {
+        grid-template-columns: repeat(7, 1fr);
+    }
+}
+
+
+/* CHANNEL CARD */
+.channel-item {
+    position: relative; /* REQUIRED for fav button */
+
+    background: #111827;
+    border-radius: 10px;
+
+    padding: 12px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition:
+        background 0.3s,
+        transform 0.2s;
+}
+
+.channel-item:hover {
+    background: #1f2937;
+    transform: scale(1.02);
+}
+
+.channel-item.active {
+    background: #ff004c;
+    color: white;
+}
+
+
+/* FAVORITE BUTTON */
+.fav-btn {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+
+    color: #ff0033;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    opacity: 1;
+    visibility: visible;
+
+    z-index: 9999;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+.fav-btn:hover {
+    transform: scale(1.15);
+    color: #ff3366;
+}
+
+
+/* CHANNEL IMAGE */
+.channel-logo {
+    width: 80px;
+    height: 80px;
+
+    object-fit: contain;
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    border-radius: 8px;
+}
+
+
+/* CHANNEL NAME */
+.channel-name {
+    font-size: 14px;
+    font-weight: bold;
+
+    margin-top: 8px;
+
+    word-break: break-word;
+}
+
+
+/* CATEGORY */
+.channel-category {
+    font-size: 12px;
+    opacity: 0.7;
 }
 
 /* Mobile & tablet (≤1024px) → 3 per row */
@@ -447,19 +564,26 @@ button {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: transparent; /* no background, just the icon */
+
+    background: transparent;
     border: none;
+
     cursor: pointer;
-    font-size: 20px;         /* size of the heart */
-    color: #ff0033;          /* heart color */
+    font-size: 20px;
+    color: #ff0033;
+
+    opacity: 1;          /* always visible */
+    visibility: visible; /* always visible */
+    display: block;      /* ensure it shows */
+
+    z-index: 999;
+
     transition: transform 0.2s, color 0.3s;
-    z-index: 2;              /* ensures it stays above logo/text */
-    /* no opacity or display rules here, so it's always visible */
 }
 
 .fav-btn:hover {
-    transform: scale(1.1);   /* slight zoom on hover */
-    color: #e6002e;          /* darker red on hover */
+    transform: scale(1.1);
+    color: #e6002e;
 }
 
 
@@ -522,4 +646,90 @@ button {
 }
 .btn:hover {
   background-color: #005a9e;
+}
+
+
+
+
+.playlist-container {
+  display: flex;
+  justify-content: space-between; /* pushes first and last to edges */
+  align-items: center;
+  margin-top: 10px;
+}
+
+.playlist-btn {
+  margin: 0 5px;
+}
+
+#prevChannelBtn {
+  margin-right: auto; /* stick to far left */
+}
+
+#nextChannelBtn {
+  margin-left: auto; /* stick to far right */
+}
+
+#prevChannelBtn, #nextChannelBtn {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  color: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: bold;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#prevChannelBtn:hover, #nextChannelBtn:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #ff004c, #ff004c);
+}
+
+
+
+/* Mobile-only styles */
+@media (max-width: 768px) {
+  #nextChannelBtn, #prevChannelBtn {
+    font-size: 28px;          /* bigger text/icons */
+    padding: 20px 28px;       /* larger tap area */
+    border-radius: 40px;      /* rounder look */
+    min-width: 100px;         /* ensure wide buttons */
+    min-height: 60px;         /* ensure tall buttons */
+  }
+
+  /* Replace text with big arrow icons */
+  #nextChannelBtn::before {
+    content: "➡️";            /* large arrow icon */
+    font-size: 38px;
+  }
+  #nextChannelBtn {
+    font-size: 0;             /* hide text label */
+  }
+
+  #prevChannelBtn::before {
+    content: "⬅️";            /* large arrow icon */
+    font-size: 38px;
+  }
+  #prevChannelBtn {
+    font-size: 0;             /* hide text label */
+  }
+}
+
+/* Default channel logo */
+.channel-logo-fallback {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+
+    margin: 0 auto;        /* 🔥 centers horizontally */
+    text-align: center;
 }
