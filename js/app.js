@@ -96,8 +96,10 @@ ${channel.logo && channel.logo.trim() ? `
                             <div class="channel-category">${channel.category || ''}</div>
 
                             <button class="fav-btn" onclick="toggleFavorite(event, ${JSON.stringify(channel.name)})">
-                                <i class="far fa-heart" style="color:${favorites.includes(channel.name) ? 'red' : '#666'}"></i>
-                            </button>
+<button class="fav-btn" onclick="event.stopPropagation(); toggleFavorite('${channel.name}')">
+    <i class="${favorites.includes(channel.name) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}"></i>
+</button>
+
                         `;
 
             div.onclick = () => playChannel(channel.url);
@@ -224,22 +226,21 @@ document
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const menuBtn = document.getElementById("menuBtn");
     const drawer = document.getElementById("drawer");
     const overlay = document.getElementById("overlay");
 
     menuBtn.addEventListener("click", () => {
-        drawer.classList.add("open");
-        overlay.classList.add("show");
+        drawer.classList.toggle("open");   // toggle on/off
+        overlay.classList.toggle("show");  // toggle on/off
     });
 
     overlay.addEventListener("click", () => {
         drawer.classList.remove("open");
         overlay.classList.remove("show");
     });
-
 });
+
 
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -397,23 +398,17 @@ function applyFilters() {
 
 
 
-function toggleFavorite(event, name){
-
-    event.stopPropagation();
-
-    if(favorites.includes(name)){
-
+function toggleFavorite(name) {
+    if (favorites.includes(name)) {
         favorites = favorites.filter(f => f !== name);
-
     } else {
-
         favorites.push(name);
     }
 
     localStorage.setItem("favorites", JSON.stringify(favorites));
-
-    renderChannels();
+    renderChannels(); // refresh UI
 }
+
 
 
 
