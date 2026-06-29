@@ -373,3 +373,13 @@ http://172.16.11.2:4562/CH-11/index.m3u8
 http://172.16.11.2:4562/CH-79/index.m3u8
 #EXTINF:-1 tvg-name="SONY" group-title="FIFA World Cup 2026",SONY MAX
 http://172.16.11.2:4562/CH-38/index.m3u8
+#EXTINF:-1 tvg-name="T-Sports" group-title="FIFA World Cup 2026",T-Sports
+http:\\114.130.57.233:8080\LIVE-Sports\video.m3u8
+#EXTINF:-1 tvg-name="ICE Sports" group-title="FIFA World Cup 2026",ICE Sports
+http://ubuntu.moonplex.net:8080/TSports_HD/index.m3u8
+#EXTINF:-1 tvg-name="Sony Max" group-title="Hindi",Sony Max
+https://mflixott.com/tv/toffee-by-maruf/live.php?id=3CF8m1Bm7hqfFKYK96&e=.m3u8
+#EXTINF:-1 tvg-name="Zee Action" group-title="Hindi",Zee Action
+https://mflixott.com/tv/toffee-by-maruf/live.php?id=r34EfeJ1LwCwUkKcF1&e=.m3u8
+#EXTINF:-1 tvg-name="Unites Sports" group-title="FIFA World Cup 2026",Unites Sports
+http://198.195.239.50:8095/unt-s/video.m3u8
