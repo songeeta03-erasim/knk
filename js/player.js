@@ -1,13 +1,19 @@
 let currentHls = null;
 let streamTimeout = null;
-let failedChannels = new Set();
+letfailedChannels = new Set();
 let currentUrl = null;
 
+let hasPlayed = false;
+let reconnecting = false;
+
 function playChannel(url) {
+
     const video = document.getElementById("videoPlayer");
     const loader = document.getElementById("loader");
 
     currentUrl = url;
+    hasPlayed = false;
+    reconnecting = false;
 
     activeChannelUrl = url;
     localStorage.setItem("lastChannel", url);
@@ -15,99 +21,224 @@ function playChannel(url) {
     loader.style.display = "block";
     renderChannels();
 
+    clearTimeout(streamTimeout);
+
     video.pause();
     video.removeAttribute("src");
     video.load();
-
-    clearTimeout(streamTimeout);
 
     if (currentHls) {
         currentHls.destroy();
         currentHls = null;
     }
 
-    // ⏱ dead stream detection
-    streamTimeout = setTimeout(() => {
-        console.log("Timeout → next channel");
-        playNextChannel();
-    }, 8000);
+    startPlayer(url);
 
-    if (Hls.isSupported()) {
+    video.onwaiting = () => {
+        loader.style.display = "block";
+    };
+
+    video.onplaying = () => {
+        loader.style.display = "none";
+        hasPlayed = true;
+    };
+}
+
+function startPlayer(url){
+
+    const video = document.getElementById("videoPlayer");
+
+    clearTimeout(streamTimeout);
+
+    // Give stream 15 sec to start/reconnect
+    streamTimeout = setTimeout(() => {
+
+        if(hasPlayed){
+
+            reconnectCurrentChannel();
+
+        }else{
+
+            console.log("Channel dead.");
+
+            failedChannels.add(url);
+
+            playNextChannel();
+
+        }
+
+    },15000);
+
+    if(Hls.isSupported()){
 
         currentHls = new Hls({
-            enableWorker: true,
-            maxBufferLength: 60,
-            maxMaxBufferLength: 120,
-            backBufferLength: 30,
-            lowLatencyMode: false
+            enableWorker:true,
+            maxBufferLength:60,
+            maxMaxBufferLength:120,
+            backBufferLength:30,
+            lowLatencyMode:false
         });
 
         currentHls.loadSource(url);
         currentHls.attachMedia(video);
 
-        currentHls.on(Hls.Events.MANIFEST_PARSED, () => {
+        currentHls.on(Hls.Events.MANIFEST_PARSED,()=>{
+
             clearTimeout(streamTimeout);
-            video.play().catch(() => {});
+
+            hasPlayed = true;
+
+            video.play().catch(()=>{});
+
         });
 
-        currentHls.on(Hls.Events.ERROR, (event, data) => {
+currentHls.on(Hls.Events.ERROR, (event, data) => {
 
-            if (!data.fatal) return;
+    if (!data.fatal) return;
 
-            console.log("Fatal error:", data);
+    console.log("HLS Error:", data.type);
 
-            failedChannels.add(currentUrl);
+    switch (data.type) {
 
-            currentHls.destroy();
-            currentHls = null;
+        case Hls.ErrorTypes.NETWORK_ERROR:
 
-            playNextChannel();
-        });
+            console.log("Network error → Trying startLoad()");
 
-    } else {
-        video.src = url;
+            currentHls.startLoad();
 
-        video.onloadedmetadata = () => {
-            clearTimeout(streamTimeout);
-            video.play().catch(() => {});
-        };
+            // Wait 15 seconds to see if it recovers
+            setTimeout(() => {
+                if (!hasPlayed) {
+                    reconnectCurrentChannel();
+                }
+            }, 15000);
 
-        video.onerror = () => {
-            failedChannels.add(currentUrl);
-            playNextChannel();
-        };
+            break;
+
+        case Hls.ErrorTypes.MEDIA_ERROR:
+
+            console.log("Media error → Trying recoverMediaError()");
+
+            currentHls.recoverMediaError();
+
+            break;
+
+        default:
+
+            console.log("Unrecoverable error");
+
+            reconnectCurrentChannel();
+
+            break;
     }
 
-    video.onwaiting = () => loader.style.display = "block";
-    video.onplaying = () => loader.style.display = "none";
+});
+
+    }else{
+
+        video.src = url;
+
+        video.onloadedmetadata = ()=>{
+
+            clearTimeout(streamTimeout);
+
+            hasPlayed = true;
+
+            video.play().catch(()=>{});
+
+        };
+
+        video.onerror = ()=>{
+
+            if(hasPlayed){
+
+                reconnectCurrentChannel();
+
+            }else{
+
+                failedChannels.add(url);
+
+                playNextChannel();
+
+            }
+
+        };
+
+    }
+
 }
 
-function playNextChannel() {
-    if (!filteredChannels || filteredChannels.length === 0) return;
+function reconnectCurrentChannel(){
 
-    // 🔥 ALWAYS find current index fresh (VERY IMPORTANT FIX)
-    let currentIndex = filteredChannels.findIndex(c => c.url === currentUrl);
+    if(reconnecting) return;
 
-    if (currentIndex === -1) currentIndex = 0;
+    reconnecting = true;
+
+    console.log("Trying reconnect...");
+
+    if(currentHls){
+
+        currentHls.destroy();
+        currentHls = null;
+
+    }
+
+    startPlayer(currentUrl);
+
+    setTimeout(()=>{
+
+        if(!hasPlayed){
+
+            console.log("Reconnect failed");
+
+            failedChannels.add(currentUrl);
+
+            reconnecting = false;
+
+            playNextChannel();
+
+        }else{
+
+            reconnecting = false;
+
+            console.log("Reconnect success");
+
+        }
+
+    },15000);
+
+}
+
+function playNextChannel(){
+
+    if(!filteredChannels || filteredChannels.length===0) return;
+
+    let currentIndex = filteredChannels.findIndex(c=>c.url===currentUrl);
+
+    if(currentIndex===-1) currentIndex=0;
 
     const total = filteredChannels.length;
 
-    // forward search only
-    for (let i = 1; i <= total; i++) {
+    for(let i=1;i<=total;i++){
 
-        const idx = (currentIndex + i) % total;
+        const idx = (currentIndex+i)%total;
+
         const channel = filteredChannels[idx];
 
-        if (failedChannels.has(channel.url)) continue;
+        if(failedChannels.has(channel.url)) continue;
 
-        console.log("Next working channel:", channel.name);
+        console.log("Next:",channel.name);
 
         playChannel(channel.url);
+
         return;
+
     }
 
-    console.log("Resetting failed list (all channels failed)");
+    console.log("All failed. Reset list.");
 
     failedChannels.clear();
+
     playChannel(filteredChannels[0].url);
+
 }
