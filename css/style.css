@@ -1099,3 +1099,52 @@ font-size:40px !important;
 }
 
 }
+
+
+/* ==========================
+STARTUP SCREEN
+========================== */
+
+#startupLoader{
+position:fixed;
+inset:0;
+background:#0b1220;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999999;
+}
+
+.startup-box{
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+.startup-logo{
+font-size:46px;
+}
+.startup-title{
+margin-top:18px;
+font-size:28px;
+font-weight:800;
+color:white;
+}
+.startup-sub{
+margin-top:8px;
+color:#999;
+font-size:13px;
+}
+.startup-ring{
+margin-top:24px;
+width:52px;
+height:52px;
+border-radius:50%;
+border:4px solid rgba(255,255,255,.1);
+border-top:4px solid #ff4667;
+animation:startSpin 1s linear infinite;
+}
+@keyframes startSpin{
+to{
+transform:rotate(360deg);
+}
+}
