@@ -430,3 +430,22 @@ function setActivePlaylist(button, name) {
   // load the playlist
   loadDefaultPlaylist(name);
 }
+
+/* ==========================
+STARTUP SCREEN
+========================== */
+
+window.addEventListener(
+"load",
+()=>{
+setTimeout(
+()=>{
+document
+.getElementById(
+"startupLoader"
+)
+?.remove();
+},
+2000
+);
+});
