@@ -1148,3 +1148,31 @@ to{
 transform:rotate(360deg);
 }
 }
+
+/* ACTIVE */
+
+.channel-item {
+    position: relative; /* required for ON AIR badge */
+}
+
+.channel-item.active {
+    border: 2px solid #a02afa;
+}
+
+.channel-item.active::before {
+    content: "ON AIR";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+
+    padding: 5px 10px;
+
+    background: #0a8508;
+    color: white;
+
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+
+    z-index: 10;
+}
